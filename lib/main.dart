@@ -62,16 +62,14 @@ class BoardState extends State<Board> {
       List<Widget> rowChildren = <Widget>[];
       for (int j = 0; j < cols; j++) {
         TileState state = uiState[i][j];
-        if (state == TileState.covered) {
+        if (state == TileState.covered || state = TileState.flagged) {
           rowChildren.add(GestureDetector(
             child: Listener(
-              child: Container(
-                margin: EdgeInsets.all(1.0),
-                height: 20.0,
-                width: 20.0,
-                color: Colors.grey,
-              ),
-            ),
+              child: CoveredMineTile(
+                flagged: state=TileState.flagged,
+                posX: i,
+                posY: j,
+              )),
           ));
         }
       }
@@ -82,7 +80,7 @@ class BoardState extends State<Board> {
       ));
     }
     return Container(
-      color: Colors.grey[700],
+      color: Colors.white54,
       padding: EdgeInsets.all(10.0),
       child: Column(
         children: boardRow,
@@ -94,7 +92,10 @@ class BoardState extends State<Board> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mine Sweeper'),
+        title: Text('Mine Sweeper',
+            textAlign: TextAlign.center, textScaleFactor: 1.5),
+        centerTitle: true,
+        backgroundColor: Colors.white30,
       ),
       body: Container(
         color: Colors.grey[50],
@@ -106,4 +107,67 @@ class BoardState extends State<Board> {
   }
 }
 
-mixin ArrayList {}
+Widget buildTile(Widget child) {
+  return Container(
+    padding: EdgeInsets.all(1.0),
+    height: 30.0,
+    width: 30.0,
+    color: Colors.white54,
+    margin: EdgeInsets.all(2.0),
+    child: child,
+  );
+}
+
+Widget buildInnerTile(Widget child) {
+  return Container(
+    padding: EdgeInsets.all(1.0),
+    margin: EdgeInsets.all(2.0),
+    width: 20.0,
+    height: 20.0,
+    child: child,
+  );
+}
+
+class CoveredMineTile extends StatelessWidget {
+  final bool flagged;
+  final int posX;
+  final int posY;
+
+  const CoveredMineTile({Key key, this.flagged, this.posX, this.posY})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Widget text;
+    if (flagged) {
+      text = buildInnerTile(
+        RichText(
+          text: TextSpan(
+            text: "\u2691",
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    Widget innerTile = Container(
+      padding: EdgeInsets.all(1.0),
+      margin: EdgeInsets.all(2.0),
+      height: 20.0,
+      width: 20.0,
+      color: Colors.white54,
+      child: text,
+    );
+    return buildTile(innerTile);
+  }
+}
+
+class OpenMineTile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    throw null;
+  }
+}
