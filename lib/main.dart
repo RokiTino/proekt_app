@@ -1,156 +1,109 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
+
+enum TileState { covered, blown, open, flagged, revealed }
 
 void main() {
-  runApp(MyApp());
+  runApp(MineSweeper());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MineSweeper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mine Sweeper',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-      ),
-      home: MyHomePage(title: 'Mine Sweeper Home Page'),
+      title: "Mine Sweeper",
+      home: Board(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
+class Board extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  BoardState createState() => BoardState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class BoardState extends State<Board> {
+  final int rows = 9;
+  final int cols = 9;
+  final int numOfMines = 11;
+
+  List<List<bool>> tiles;
+  List<List<TileState>> uiState;
+  void resetBoard() {
+    uiState = new List<List<TileState>>.generate(rows, (row) {
+      return new List<TileState>.filled(cols, TileState.covered);
+    });
+    tiles = new List<List<bool>>.generate(rows, (row) {
+      return new List<bool>.filled(cols, false);
+    });
+
+    Random random = Random();
+    int remainingMines = numOfMines;
+    while (remainingMines > 0) {
+      int pos = random.nextInt(rows * cols);
+      int row = pos ~/ rows;
+      int col = pos % cols;
+      if (!tiles[row][col]) {
+        tiles[row][col] = true;
+        remainingMines--;
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    resetBoard();
+    super.initState();
+  }
+
+  Widget buildBoard() {
+    List<Row> boardRow = <Row>[];
+    for (int i = 0; i < rows; i++) {
+      List<Widget> rowChildren = <Widget>[];
+      for (int j = 0; j < cols; j++) {
+        TileState state = uiState[i][j];
+        if (state == TileState.covered) {
+          rowChildren.add(GestureDetector(
+            child: Listener(
+              child: Container(
+                margin: EdgeInsets.all(1.0),
+                height: 20.0,
+                width: 20.0,
+                color: Colors.grey,
+              ),
+            ),
+          ));
+        }
+      }
+      boardRow.add(Row(
+        children: rowChildren,
+        mainAxisAlignment: MainAxisAlignment.center,
+        key: ValueKey<int>(i),
+      ));
+    }
+    return Container(
+      color: Colors.grey[700],
+      padding: EdgeInsets.all(10.0),
+      child: Column(
+        children: boardRow,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Mine Sweeper'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.adjust),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
+      body: Container(
+        color: Colors.grey[50],
+        child: Center(
+          child: buildBoard(),
         ),
       ),
     );
   }
 }
+
+mixin ArrayList {}
