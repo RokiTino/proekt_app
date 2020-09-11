@@ -62,14 +62,11 @@ class BoardState extends State<Board> {
       List<Widget> rowChildren = <Widget>[];
       for (int j = 0; j < cols; j++) {
         TileState state = uiState[i][j];
-        if (state == TileState.covered || state = TileState.flagged) {
+        if (state == TileState.covered ) {
           rowChildren.add(GestureDetector(
             child: Listener(
-              child: CoveredMineTile(
-                flagged: state=TileState.flagged,
-                posX: i,
-                posY: j,
-              )),
+              child: CoveredMineTile(),
+            ),
           ));
         }
       }
